@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import scriptLoader from 'react-async-script-loader';
+import { MAP_API_KEY } from './location/apikeys.js';
+import { FS_CLIENT_ID } from './location/apikeys.js';
+import { FS_CLIENT_SECRET } from './location/apikeys.js';
+import { locations } from './location/locations.js';
+import Map from './map.js';
 
 class App extends Component {
   render() {
