@@ -1,32 +1,35 @@
 export const locations = [
   {
-    name: 'Ice Cream Museum',
+    name: 'The Walt Disney Family Museum',
     location: {
-      address: '1 Grant Ave, San Francisco, CA 94108',
-      lat: 37.7870,
-      lng: -122.4052,
+      address: '104 Montgomery St, San Francisco, CA 94129',
+      lat: 37.8012,
+      lng: -122.4585,
 
-    }
+    },
+    venueId:'4eb43ab477c8972736833d9a'
   },
 
   {
     name: 'Palace of Fine rts',
     location: {
       address: '3301 Lyon St, San Francisco, CA 94123',
-      lat: 37.8030,
-      lng: -122.4492,
+      lat: 37.8028,
+      lng: -122.4484,
 
-    }
+    },
+    venueId:'4468f484f964a5204f331fe3'
   },
 
   {
-    name: 'Alcatraz Heliport',
+    name: 'Alcatraz',
     location: {
       address: 'San Francisco, CA 94133',
       lat: 37.8270,
       lng: -122.4230,
 
-    }
+    },
+    venueId:'4451c80ef964a520a5321fe3'
   },
 
   {
@@ -36,18 +39,20 @@ export const locations = [
       lat: 37.8199,
       lng: -122.4783,
 
-    }
+    },
+    venueId: '49d01698f964a520fd5a1fe3'
   },
 
-  {
-    name: 'Cable Car Barn and Museum',
-    location: {
-      address: '1201 Mason St, San Francisco, CA 94108',
-      lat: 37.4741,
-      lng: -122.2442,
-
-    }
-  },
+  // {
+  //   name: 'Cable Car Barn and Museum',
+  //   location: {
+  //     address: '1201 Mason St, San Francisco, CA 94108',
+  //     lat: 37.4741,
+  //     lng: -122.2442,
+  //
+  //   },
+  //   venueId:'4698e043f964a520f0481fe3'
+  // },
 
   {
     name: 'Cliff House',
@@ -56,17 +61,19 @@ export const locations = [
       lat: 37.7785,
       lng: -122.5140,
 
-    }
+    },
+    venueId:'4b81adfbf964a5205cb730e3'
   },
 
   {
     name: 'DeYoung Museum',
     location: {
       address: '50 Hagiwara Tea Garden Dr, San Francisco, CA 94118',
-      lat: 37.4617,
-      lng: -1222.809,
+      lat: 37.7713,
+      lng: -122.4686
 
-    }
+    },
+    venueId:'5ae65c9cd1a402002cd2d781'
   },
 
 
