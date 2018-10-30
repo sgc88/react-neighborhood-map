@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import logo from './logo.svg';
 import './App.css';
 import scriptLoader from 'react-async-script-loader';
 import { MAP_API_KEY } from './location/apikeys.js';
@@ -7,169 +6,190 @@ import { FS_CLIENT_ID } from './location/apikeys.js';
 import { FS_CLIENT_SECRET } from './location/apikeys.js';
 import { locations } from './location/locations.js';
 import markerDefault from './images/museumm.png';
-import markerSelected from './images/ticketthree.png';
+import markerSelected from './images/museumm2.png';
 import foursquareLogo from './images/foursquare.png';
 import {mapStyle} from './mapStyle.js';
-import Filter from './Filter.js';
 import Map from './map.js';
+import Filter from './Filter.js';
 
 
 let buildMap = {};
 export let checkGetData = '';
 
-
 class App extends Component {
-
-  constructor(props){
+  // Constructor
+  constructor(props) {
     super(props);
 
-    this.state ={
+    // Initial states
+    this.state = {
       map: {},
-      markers: {},
-      infowindow:{}
+      markers: [],
+      infowindow: {}
     }
-
-    this.initMap = this.initMap.bind(this);
+    // Binding the getData function to this
     this.getData = this.getData.bind(this);
-
   }
 
-  componentDidMount(){
-    window.initMap = this.initMap;
-  }
+  componentWillReceiveProps({isScriptLoadSucceed}) {
+    // Conditional to initialize the map when the script loads
+    if (isScriptLoadSucceed) {
 
-  initMap(){
-    this.getData();
+      // Calls this function to fetch Foursquare data asynchronously
+      this.getData();
 
-    buildMap = new window.google.maps.Map(document.getElementById('map'), {
-      center:{lat: 37.8199, lng: -122.4783},
-      zoom: 12,
-      styles: mapStyle,
-      mapTypeControl: false,
-      fullscreenControl: false
-    });
-    const buildInfoWindow = new window.google.maps.InfoWindow({maxWidth: 320});
-    const bounds = new window.google.maps.LatLngBounds();
-    let buildMarkers = [];
-    let allLocations = [];
-    setTimeout(() =>{
+      // Initialize Google Maps
+      buildMap = new window.google.maps.Map(document.getElementById('map'), {
+        center: { lat: -37.8199, lng: -122.4783},
+        zoom: 12,
+        styles: mapStyle,
+        mapTypeControl: false,
+        fullscreenControl: false
+      });
 
-      if (this.state.markers.legth === 12){
-        allLocations = this.state.markers;
-        console.log(allLocations + "hello wolrd");
-        checkGetData = true;
-      }else{
-        allLocations = locations;
-        console.log(allLocations + "this is for else");
-      }
+      const buildInfoWindow = new window.google.maps.InfoWindow({maxWidth: 320});
+      const bounds = new window.google.maps.LatLngBounds();
+      const myEvents = 'click keypress'.split(' ');
+      let buildMarkers = [];
+      let allLocations = [];
 
-      for (let i = 0; i < allLocations.length; i++) {
-        let position = {lat: allLocations[i].location.lat, lng: allLocations[i].location.lng};
-        let name = allLocations[i].name;
-        let address = allLocations[i].location.address;
-        let lat = allLocations[i].location.lat;
-        let lng = allLocations[i].location.lng;
-        let bestPhoto = '';
-        let rating = '';
-        let likes = '';
-        let tips = '';
-        let moreInfo = '';
+      setTimeout(() => {
 
+        /**
+        * Checks if the markers state get Foursquare data for all markers
+        * else the markers will be built with the locations stored in the data directory
+        */
+        if (this.state.markers.length === 6) {
+          allLocations = this.state.markers;
+          console.log(allLocations);
 
-        if(checkGetData === true){
-          bestPhoto = allLocations[i].bestPhoto.prefix.concat('width300', allLocations[i].bestphoto.suffix);
-          rating = allLocations[i].rating;
-          likes = allLocations[i].likes.count;
-          tips = allLocations[i].tips.groups[0].items[0].text;
-          moreInfo = allLocations[i].canonicalUrl;
+          /**
+          * Confirmation that Foursquare data has been received
+          * this information will be used in other parts of the App
+          */
+          checkGetData = true;
+
+        } else {
+          allLocations = locations;
+          console.log(allLocations);
         }
-        let marker = new window.google.maps.Marker({
-          id: i,
+
+        for (let i = 0; i < allLocations.length; i++) {
+          let position = {lat: allLocations[i].location.lat, lng: allLocations[i].location.lng};
+          let name = allLocations[i].name;
+          let address = allLocations[i].location.address;
+          let lat = allLocations[i].location.lat;
+          let lng = allLocations[i].location.lng;
+          let bestPhoto = '';
+          let rating = '';
+          let likes = '';
+          let tips = '';
+          let moreInfo = '';
+
+          if (checkGetData === true) {
+            bestPhoto = allLocations[i].bestPhoto.prefix.concat('width300', allLocations[i].bestPhoto.suffix);
+            rating = allLocations[i].rating;
+            likes = allLocations[i].likes.count;
+            moreInfo = allLocations[i].canonicalUrl;
+          }
+
+          let marker = new window.google.maps.Marker({
+            id: i,
+            map: buildMap,
+            position: position,
+            name: name,
+            title: name,
+            address: address,
+            lat: lat,
+            lng: lng,
+            bestPhoto: bestPhoto,
+            rating: rating,
+            likes: likes,
+            moreInfo: moreInfo,
+            icon: markerDefault,
+            animation: window.google.maps.Animation.DROP
+          });
+
+          buildMarkers.push(marker);
+
+          // Adds event listeners to all created markers
+          for (let i = 0; i < myEvents.length; i++) {
+            marker.addListener(myEvents[i], function() {
+              addInfoWindow(this, buildInfoWindow);
+              this.setAnimation(window.google.maps.Animation.BOUNCE);
+              setTimeout(function () {
+                marker.setAnimation(null);
+              }, 1000);
+            });
+          }
+
+          marker.addListener('mouseover', function() {
+            this.setIcon(markerSelected);
+          });
+
+          marker.addListener('mouseout', function() {
+            this.setIcon(markerDefault);
+          });
+
+          bounds.extend(buildMarkers[i].position);
+        }
+
+        buildMap.fitBounds(bounds);
+
+        // Updates states with prepared data
+        this.setState({
           map: buildMap,
-          position: position,
-          name: name,
-          title: name,
-          address: address,
-          lat: lat,
-          lng: lng,
-          bestPhoto: bestPhoto,
-          rating: rating,
-          likes: likes,
-          tips: tips,
-          moreInfo: moreInfo,
-          icon: markerDefault,
-          animation: window.google.maps.Animation.DROP
+          markers: buildMarkers,
+          infowindow: buildInfoWindow
         });
+      }, 800);
 
-        buildMarkers.push(marker);
-
-        marker.addListener('click', function(){
-          addInfoWindow(this, buildInfoWindow);
-          this.setAnimation(window.google.maps.Animation.BOUNCE);
-          setTimeout(function(){
-            marker.setAnimation(null)
-          }, 1000)
-        });
-
-        marker.addListener('mouseover', function(){
-          this.setIcon(markerSelected);
-
-        });
-
-        marker.addListener('mouseout', function(){
-          this.setIcon(markerDefault);
-        });
-        bounds.extend(buildMarkers[i].position);
-
-      }
-      buildMap.fitBounds(bounds);
-
-      this.setState({
-        map: buildMap,
-        markers: buildMarkers,
-        infowindow: buildInfoWindow
-      })
-
-    },500);
+    // Indication when the map can't be loaded
+    } else {
+      alert('Sorry, Google Maps can&apos;t be loaded. Try later!');
+    }
   }
+
 
   getData() {
-  let places = [];
-  locations.map(location =>
-    fetch(`https://api.foursquare.com/v2/venues/${location.venueId}` +
-      `?client_id=${FS_CLIENT_ID}` +
-      `&client_secret=${FS_CLIENT_SECRET}` +
-      `&v=20180323`)
-      .then(response => response.json())
-      .then(data => {
-        if (data.meta.code === 200) {
-          places.push(data.response.venue);
-        }
-      }).catch(error => {
-        checkGetData = false;
-        console.log(error);
-      })
-  )
-   this.setState({
-    markers: places
-  });
-  // console.log(this.state.markers);
-}
+    let places = [];
+    locations.map((location) =>
+      fetch(`https://api.foursquare.com/v2/venues/${location.venueId}` +
+        `?client_id=${FS_CLIENT_ID}` +
+        `&client_secret=${FS_CLIENT_SECRET}` +
+        `&v=20181027`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.meta.code === 200) {
+            places.push(data.response.venue);
+          }
+        }).catch(error => {
+          checkGetData = false;
+          console.log(error);
+        })
+    );
 
-   render() {
+    // Updates the markers state with the data obtained
+    this.setState({
+      markers: places
+    });
+    console.log(this.state.markers);
+  }
+
+  // Renders the App
+  render() {
     return (
-      <div className="App">
+      <div className='App' role='main'>
         <Filter
-         map ={this.state.map}
-         markers ={this.state.markers}
-         infoWindow ={this.state.infoWindow}
+          map={ this.state.map }
+          markers={ this.state.markers }
+          infowindow={ this.state.infowindow }
         />
         <Map />
       </div>
     );
-   }
+  }
 }
-
 
 
 function addInfoWindow(marker, infowindow) {
@@ -183,7 +203,6 @@ function addInfoWindow(marker, infowindow) {
       '<p class="info-address">Address: '+marker.address+'</p><br>'+
       '<p class="info-rating">Rating: '+marker.rating+'</p><br>'+
       '<p class="info-likes">Likes: '+marker.likes+'</p><br>'+
-      '<p class="info-tips">Tips: "'+marker.tips+'"</p><br>'+
       '<a class="info-link" href='+marker.moreInfo+' target="_blank"><span>For more information<span></a><br>'+
       '<img class="info-fslogo" src='+foursquareLogo+' alt="Powered by Foursquare"><br>'+
       '</div>'
@@ -197,6 +216,7 @@ function addInfoWindow(marker, infowindow) {
   }
   infowindow.open(buildMap, marker);
 }
- export default scriptLoader(
-  [`https://maps.googleapis.com/maps/api/js?key=${MAP_API_KEY}&callback=initMap`]
+
+export default scriptLoader(
+  [`https://maps.googleapis.com/maps/api/js?key=${MAP_API_KEY}`]
 )(App);
