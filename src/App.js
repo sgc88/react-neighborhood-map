@@ -17,11 +17,11 @@ let buildMap = {};
 export let checkGetData = '';
 
 class App extends Component {
-  // Constructor
+
   constructor(props) {
     super(props);
 
-    // Initial states
+
     this.state = {
       map: {},
       markers: [],
@@ -176,7 +176,7 @@ class App extends Component {
     console.log(this.state.markers);
   }
 
-  // Renders the App
+
   render() {
     return (
       <div className='App' role='main'>
