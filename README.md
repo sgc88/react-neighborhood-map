@@ -44,6 +44,6 @@ To test this App in your machine, just follow the steps below:
 -   The service worker is only enabled in the production environment. It's recommended that you do not enable an offline-first service worker in a development environment.
 -   If you need to  **test your offline-first**  service worker locally, build the application (using  `npm run build`) and run a simple http server from your build directory.
 
-![alt text]("./images/image1.png")
-![alt text]("./images/image2.png")
-![alt text]("./images/image3.png")
+![alt text](./images/image1.png)
+![alt text](./images/image2.png)
+![alt text](./images/image3.png)
